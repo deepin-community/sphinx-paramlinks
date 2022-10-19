@@ -1,0 +1,146 @@
+sphinx-paramlinks (0.5.1-2) unstable; urgency=medium
+
+  * Bump Standards-Version to 4.6.0, no changes needed.
+  * Upload to unstable.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Wed, 22 Sep 2021 15:21:24 +0300
+
+sphinx-paramlinks (0.5.1-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sat, 15 May 2021 20:16:32 +0300
+
+sphinx-paramlinks (0.5.0-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Thu, 04 Feb 2021 20:15:34 +0300
+
+sphinx-paramlinks (0.4.3-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Update Maintainer field with new Debian Python Team
+    contact address.
+  * d/control: Update Vcs-* fields with new Debian Python Team Salsa
+    layout.
+
+  [ Dmitry Shachnev ]
+  * New upstream release.
+  * Update to debhelper compat level 13.
+  * Set Rules-Requires-Root: no.
+  * Bump Standards-Version to 4.5.1, no changes needed.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Mon, 30 Nov 2020 14:55:18 +0300
+
+sphinx-paramlinks (0.4.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Sandro Tosi <morph@debian.org>  Sat, 11 Jul 2020 19:56:30 -0400
+
+sphinx-paramlinks (0.4.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Piotr Ożarowski <piotr@debian.org>  Tue, 12 May 2020 09:36:00 +0200
+
+sphinx-paramlinks (0.3.7-1) unstable; urgency=medium
+
+  * New upstream release
+  * Standards-Version bumped to 4.5.0 (no changes needed)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Sun, 22 Mar 2020 23:18:49 +0100
+
+sphinx-paramlinks (0.3.5-2) unstable; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Update Homepage: upstream moved from BitBucket to GitHub.
+
+  [ Ondřej Nový ]
+  * Use debhelper-compat instead of debian/compat.
+
+  [ Sandro Tosi ]
+  * Drop python2 support; Closes: #938543
+
+ -- Sandro Tosi <morph@debian.org>  Sat, 04 Jan 2020 00:41:56 -0500
+
+sphinx-paramlinks (0.3.5-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * Convert git repository from git-dpm to gbp layout
+
+  [ Dmitry Shachnev ]
+  * New upstream release.
+  * Bump Standards-Version to 4.2.1, no changes needed.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Tue, 02 Oct 2018 12:34:23 +0300
+
+sphinx-paramlinks (0.3.4-2) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Set Vcs-* to salsa.debian.org
+  * d/copyright: Use https protocol in Format field
+  * d/control: Remove trailing whitespaces
+
+  [ Dmitry Shachnev ]
+  * Depend on sphinx (closes: #896288, #896366).
+  * Bump Standards-Version to 4.1.4, no changes needed.
+  * Update to debhelper compat level 11.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sun, 22 Apr 2018 21:49:37 +0300
+
+sphinx-paramlinks (0.3.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add missing python{,3}-docutils to Depends
+  * Standards-Version bumped to 4.0.0 (no changes needed)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Tue, 20 Jun 2017 19:52:13 +0200
+
+sphinx-paramlinks (0.3.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Install README.rst as a documentation file.
+  * Bump Standards-Version to 3.9.8, no changes needed.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sat, 14 May 2016 19:25:07 +0300
+
+sphinx-paramlinks (0.3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update Vcs-Git field to use the recommended HTTPS URL.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Wed, 03 Feb 2016 22:54:36 +0300
+
+sphinx-paramlinks (0.2.2-3) unstable; urgency=medium
+
+  * Do not attempt to run tests as they do not exist (closes: #800139).
+  * Update debian/watch to use pypi.debian.net redirector.
+  * Bump Standards-Version to 3.9.6, no changes needed.
+  * Fix Lintian license-name-not-unique warning.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sat, 03 Oct 2015 20:34:44 +0300
+
+sphinx-paramlinks (0.2.2-2) unstable; urgency=medium
+
+  [ Piotr Ożarowski ]
+  * Fix debian/watch file to point to the right project.
+
+  [ Dmitry Shachnev ]
+  * Update my e-mail address.
+  * Fix Lintian warnings about long and duplicate descriptions.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sun, 14 Sep 2014 12:23:34 +0400
+
+sphinx-paramlinks (0.2.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Piotr Ożarowski <piotr@debian.org>  Wed, 22 Jan 2014 22:36:21 +0100
+
+sphinx-paramlinks (0.2.0-1) unstable; urgency=low
+
+  * Initial release (closes: #735508)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Wed, 15 Jan 2014 23:26:36 +0100

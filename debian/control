@@ -1,0 +1,29 @@
+Source: sphinx-paramlinks
+Maintainer: Debian Python Team <team+python@tracker.debian.org>
+Uploaders: Dmitry Shachnev <mitya57@debian.org>, Piotr Ożarowski <piotr@debian.org>
+Section: python
+Priority: optional
+Build-Depends: debhelper-compat (= 13),
+ dh-python,
+ python3-all,
+ python3-setuptools
+Rules-Requires-Root: no
+Standards-Version: 4.6.0
+Homepage: https://github.com/sqlalchemyorg/sphinx-paramlinks
+Vcs-Git: https://salsa.debian.org/python-team/packages/sphinx-paramlinks.git
+Vcs-Browser: https://salsa.debian.org/python-team/packages/sphinx-paramlinks
+
+Package: python3-sphinx-paramlinks
+Architecture: all
+Depends: python3-sphinx, ${misc:Depends}, ${python3:Depends}
+Description: Sphinx extension to make param links linkable (Python 3 version)
+ Sphinx extension which allows :param: directives within Python documentation
+ to be linkable.
+ .
+ Features:
+ .
+  * :param: directives within Sphinx function/method descriptions will be
+    given aparagraph link so that they can be linked to externally.
+  * a new text role :paramref: is added, which works like :meth:, :func:, etc.
+ .
+ This package contains Python 3.x version of sphinx_paramlinks module.
