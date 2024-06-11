@@ -1,11 +1,10 @@
 #!coding: utf-8
-from distutils.version import LooseVersion
+from enum import Enum
 import os
 import re
 
 from docutils import nodes
 from docutils.transforms import Transform
-from sphinx import __version__
 from sphinx import addnodes
 from sphinx.domains import ObjType
 from sphinx.domains.python import ObjectEntry
@@ -29,6 +28,14 @@ def _is_html(app):
 
 
 # https://www.sphinx-doc.org/en/master/extdev/deprecated.html
+
+
+# Constants for link styles
+class HyperlinkStyle(Enum):
+    NONE = "none"
+    NAME = "name"
+    LINK_SYMBOL = "link_symbol"
+    NAME_AND_SYMBOL = "name_and_symbol"
 
 
 def _indexentries(env):
@@ -65,7 +72,12 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
             name = name[0:-9]
 
         def cvt(m):
-            modifier, objname, paramname = m.group(1) or "", name, m.group(2)
+            role, modifier, objname, paramname = (
+                m.group(1),
+                m.group(2) or "",
+                name,
+                m.group(3),
+            )
             refname = _refname_from_paramname(paramname, strip_markup=True)
             item = (
                 "single",
@@ -73,26 +85,34 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
                 "%s.params.%s" % (objname, refname),
                 "",
             )
-            if LooseVersion(__version__) >= LooseVersion("1.4.0"):
-                item += (None,)
+            item += (None,)
 
             doc_idx.append(item)
-            return ":param %s_sphinx_paramlinks_%s.%s:" % (
+            return ":%s %s_sphinx_paramlinks_%s.%s:" % (
+                role,
                 modifier,
                 objname,
                 paramname,
             )
 
         def secondary_cvt(m):
-            modifier, objname, paramname = m.group(1) or "", name, m.group(2)
-            return ":type %s_sphinx_paramlinks_%s.%s:" % (
+            role, modifier, objname, paramname = (
+                m.group(1),
+                m.group(2) or "",
+                name,
+                m.group(3),
+            )
+            return ":%s %s_sphinx_paramlinks_%s.%s:" % (
+                role,
                 modifier,
                 objname,
                 paramname,
             )
 
-        line = re.sub(r"^:param ([^:]+? )?([^:]+?):", cvt, line)
-        line = re.sub(r"^:type ([^:]+? )?([^:]+?):", secondary_cvt, line)
+        line = re.sub(r"^:(keyword|param) ([^:]+? )?([^:]+?):", cvt, line)
+        line = re.sub(
+            r"^:(kwtype|type) ([^:]+? )?([^:]+?):", secondary_cvt, line
+        )
         return line
 
     if what in ("function", "method", "class"):
@@ -149,6 +169,24 @@ class LinkParams(Transform):
     default_priority = 210
 
     def apply(self):
+        config_value = (
+            self.document.settings.env.app.config.paramlinks_hyperlink_param
+        )
+        try:
+            link_style = HyperlinkStyle[config_value.upper()]
+        except KeyError as exc:
+            raise ValueError(
+                f"Unknown value {repr(config_value)} for "
+                f"'paramlinks_hyperlink_param'. "
+                f"Must be one of "
+                f"""{
+                    ', '.join(repr(member.value) for member in HyperlinkStyle)
+                }."""
+            ) from exc
+
+        if link_style is HyperlinkStyle.NONE:
+            return
+
         is_html = _is_html(self.document.settings.env.app)
 
         # search <strong> nodes, which will include the titles for
@@ -171,7 +209,9 @@ class LinkParams(Transform):
                     # add the "p" thing only if we're the HTML builder.
 
                     # using a real ¶, surprising, right?
-                    # http://docutils.sourceforge.net/FAQ.html#how-can-i-represent-esoteric-characters-e-g-character-entities-in-a-document
+                    # http://docutils.sourceforge.net/FAQ.html
+                    # #how-can-i-represent-esoteric-characters-
+                    # e-g-character-entities-in-a-document
 
                     # "For example, say you want an em-dash (XML
                     # character entity &mdash;, Unicode character
@@ -197,19 +237,48 @@ class LinkParams(Transform):
                     else:
                         return
 
-                    ref.parent.insert(
-                        pos + 1,
-                        nodes.reference(
+                    refparent = ref.parent
+
+                    if link_style in (
+                        HyperlinkStyle.NAME,
+                        HyperlinkStyle.NAME_AND_SYMBOL,
+                    ):
+                        # If the parameter name should be a href, we wrap it
+                        # into an <a></a> tag
+                        element = refparent.pop(pos)
+
+                        # note this is expected to be the same....
+                        # assert element is ref
+
+                        newnode = nodes.reference(
                             "",
                             "",
-                            nodes.Text(u"¶", u"¶"),
+                            # needed to avoid recursion overflow
+                            element.deepcopy(),
                             refid=refid,
-                            # paramlink is our own CSS class, headerlink
-                            # is theirs.  Trying to get everything we can for
-                            # existing symbols...
-                            classes=["paramlink", "headerlink"],
-                        ),
-                    )
+                            classes=["paramname"],
+                        )
+                        refparent.insert(pos, newnode)
+
+                    if link_style in (
+                        HyperlinkStyle.LINK_SYMBOL,
+                        HyperlinkStyle.NAME_AND_SYMBOL,
+                    ):
+                        # If there should be a link symbol after the parameter
+                        # name, insert it here
+                        refparent.insert(
+                            pos + 1,
+                            nodes.reference(
+                                "",
+                                "",
+                                nodes.Text("¶", "¶"),
+                                refid=refid,
+                                # paramlink is our own CSS class, headerlink
+                                # is theirs.  Trying to get everything we can
+                                # for existing symbols...
+                                classes=["paramlink", "headerlink"],
+                            ),
+                        )
 
 
 def lookup_params(app, env, node, contnode):
@@ -225,6 +294,20 @@ def lookup_params(app, env, node, contnode):
     target = node["reftarget"]
 
     tokens = target.split(".")
+
+    # if we just have :paramref:`arg` and not :paramref:`namespace.arg`,
+    # we must assume that the current namespace is meant.
+    if tokens == [target]:
+        #
+        # node.source is expected to look like:
+        # /path/to/file.py:docstring of module.clsname.methname
+        #
+        docstring_match = re.match(r".*?:docstring of (.*)", node.source)
+        if docstring_match:
+            full_attr_path = docstring_match.group(1)
+            fn_name = full_attr_path.split(".")[-1]
+            tokens.insert(0, fn_name)
+
     resolve_target = ".".join(tokens[0:-1])
 
     # we are now cleared of Sphinx's resolver.
@@ -267,7 +350,7 @@ def lookup_params(app, env, node, contnode):
 
     if newnode is not None:
         # assuming we found it, tack the paramname back onto to the final
-        # URI.
+        # URI
         if "refuri" in newnode:
             newnode["refuri"] += ".params." + paramname
         elif "refid" in newnode:
@@ -278,7 +361,8 @@ def lookup_params(app, env, node, contnode):
 
 def add_stylesheet(app):
     # changed in 1.8 from add_stylesheet()
-    # https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx.add_css_file
+    # https://www.sphinx-doc.org/en/master/extdev/appapi.html
+    # #sphinx.application.Sphinx.add_css_file
     app.add_css_file("sphinx_paramlinks.css")
 
 
@@ -309,27 +393,11 @@ def build_index(app, doctree):
         doc_entries = entries[docname]
         _indexentries(app.env)[docname].extend(doc_entries)
 
-        if LooseVersion(__version__) >= LooseVersion("4.0.0"):
-            for entry in doc_entries:
-                sing, desc, ref, extra = entry[:4]
-                app.env.domains["py"].data["objects"][ref] = ObjectEntry(
-                    docname, ref, "parameter", False
-                )
-        elif LooseVersion(__version__) >= LooseVersion("3.0.0"):
-            for entry in doc_entries:
-                sing, desc, ref, extra = entry[:4]
-                app.env.domains["py"].data["objects"][ref] = ObjectEntry(
-                    docname,
-                    ref,
-                    "parameter",
-                )
-        else:
-            for entry in doc_entries:
-                sing, desc, ref, extra = entry[:4]
-                app.env.domains["py"].data["objects"][ref] = (
-                    docname,
-                    "parameter",
-                )
+        for entry in doc_entries:
+            sing, desc, ref, extra = entry[:4]
+            app.env.domains["py"].data["objects"][ref] = ObjectEntry(
+                docname, ref, "parameter", False
+            )
 
     _indexentries(app.env).pop("_sphinx_paramlinks_index")
 
@@ -337,6 +405,16 @@ def build_index(app, doctree):
 def setup(app):
     app.add_transform(LinkParams)
     app.add_transform(ApplyParamPrefix)
+
+    # Make sure that default is are the same as in LinkParams
+    # When config changes, the whole env needs to be rebuild since
+    # LinkParams is applied while building the doctrees
+    app.add_config_value(
+        "paramlinks_hyperlink_param",
+        HyperlinkStyle.LINK_SYMBOL.name,
+        "env",
+        [str],
+    )
 
     # PyXRefRole is what the sphinx Python domain uses to set up
     # role nodes like "meth", "func", etc.  It produces a "pending xref"
@@ -348,6 +426,7 @@ def setup(app):
     app.connect("build-finished", copy_stylesheet)
     app.connect("doctree-read", build_index)
     app.connect("missing-reference", lookup_params)
+
     return {
         "parallel_read_safe": True,
         "parallel_write_safe": True,

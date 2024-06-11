@@ -1,3 +1,5 @@
+.gitignore
+.pre-commit-config.yaml
 LICENSE
 MANIFEST.in
 README.rst
@@ -10,4 +12,5 @@ sphinx_paramlinks.egg-info/PKG-INFO
 sphinx_paramlinks.egg-info/SOURCES.txt
 sphinx_paramlinks.egg-info/dependency_links.txt
 sphinx_paramlinks.egg-info/not-zip-safe
+sphinx_paramlinks.egg-info/requires.txt
 sphinx_paramlinks.egg-info/top_level.txt

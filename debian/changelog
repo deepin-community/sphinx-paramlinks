@@ -1,3 +1,32 @@
+sphinx-paramlinks (0.6.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump required sphinx version to 4.0.0.
+  * Bump Standards-Version to 4.6.2, no changes needed.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Wed, 16 Aug 2023 20:28:33 +0300
+
+sphinx-paramlinks (0.5.4-2) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Set field Upstream-Name in debian/copyright.
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository-Browse.
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 16 Nov 2022 10:57:59 +0000
+
+sphinx-paramlinks (0.5.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Standards-Version to 4.6.1, no changes needed.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sun, 05 Jun 2022 19:39:32 +0300
+
+sphinx-paramlinks (0.5.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Piotr Ożarowski <piotr@debian.org>  Mon, 14 Feb 2022 15:33:19 +0100
+
 sphinx-paramlinks (0.5.1-2) unstable; urgency=medium
 
   * Bump Standards-Version to 4.6.0, no changes needed.
