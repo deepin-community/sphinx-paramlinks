@@ -24,8 +24,9 @@ setup(
     "descriptions to be linkable",
     long_description=open(readme).read(),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
+        "Framework :: Sphinx :: Extension",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
@@ -41,4 +42,8 @@ setup(
     packages=["sphinx_paramlinks"],
     include_package_data=True,
     zip_safe=False,
+    install_requires=[
+        "Sphinx>=4.0.0",
+        "docutils",
+    ],
 )

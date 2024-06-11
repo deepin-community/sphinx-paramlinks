@@ -1,4 +1,5 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: sphinx-paramlinks
 
 Files: *
 Copyright: 2012-2014 Michael Bayer
